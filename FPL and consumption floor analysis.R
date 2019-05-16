@@ -5,6 +5,7 @@ data <- read.csv("PL data.csv")
 ext <- read.csv("povcal_out.csv")
 Povcal.CPI <- read.csv("doc_cpi_list.csv")
 
+#Download FAO food CPI and total CPI
 temp_download <- tempfile()
 download.file("http://fenixservices.fao.org/faostat/static/bulkdownloads/ConsumerPriceIndices_E_All_Data.zip",temp_download)
 FAO.CPI <- read.csv(unz(temp_download,"ConsumerPriceIndices_E_All_Data_NOFLAG.csv"))
