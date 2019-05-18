@@ -296,6 +296,6 @@ ggsave("NPL.kernel.plot.png", NPL.kernel.plot)
 
 Floor.FPL.kernel.plot <- ggplot(subset(FP.floors.FPL,RequestYear==2015|RequestYear==1981)) +
   geom_density(aes(floor.cal,col=as.character(RequestYear),fill=as.character(RequestYear),alpha=I(0.5)),adjust=1, kernel="g", na.rm=T)
-ggsave("Floor.FPL.kernel.plot.png", FPL.floor.kernel.plot)
+ggsave("Floor.FPL.kernel.plot.png", Floor.FPL.kernel.plot)
 
 rm(FP.list,CPI,CPI.2011,FAO.CPI,FAO.CPI.mean,FAO.CPI.melt,FCPI,FCPI.2011,Povcal.CPI,Povcal.CPI.melt,Povcal.PPP,WDI.CPI,WDI.ISO,WDI.PPP,Povcal.CPI.melt.IDN,Povcal.CPI.melt.IDN.R,Povcal.CPI.melt.IDN.U)
