@@ -1,6 +1,8 @@
 required.packages <- c("reshape2","ggplot2","WDI","data.table")
 lapply(required.packages, require, character.only=T)
 
+setwd("C:/git/consumption-floor")
+
 data <- read.csv("PL data.csv")
 ext <- read.csv("povcal_out.csv")
 Povcal.CPI <- read.csv("doc_cpi_list.csv")
