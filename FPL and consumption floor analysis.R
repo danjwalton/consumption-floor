@@ -1,8 +1,6 @@
 required.packages <- c("reshape2","ggplot2","WDI","data.table")
 lapply(required.packages, require, character.only=T)
 
-setwd("C:/git/consumption-floor")
-
 data <- read.csv("PL data.csv")
 ext <- read.csv("povcal_out.csv")
 Povcal.CPI <- read.csv("doc_cpi_list.csv")
@@ -239,7 +237,7 @@ FPL <- FPL[complete.cases(FPL),]
 
 write.csv(PL,"PLs.csv",row.names=F)
 
-#Query Povcal with FPL(PPP) set as PL. There is a more efficient way of doing this (multiple countries and poverty lines per query)
+#Query Povcal with FPL(PPP) set as PL. There is a more efficient way of doing this (multiple countries and poverty lines per query), but the API doesn't seem to be able to handle it
 povcal.out.PPP <- function(country,year="all",PL){
   param <- paste0("RefYears=",year,"&PovertyLine=",PL,"&C0=",country)
   url <- paste0("http://iresearch.worldbank.org/PovcalNet/PovcalNetAPI.ashx?",param,"&display=c")
@@ -282,6 +280,30 @@ FP.floors.FPL[which(FP.floors.FPL$CoverageType=="U")]$CountryName <- paste0(FP.f
 FP.floors.FPL$floor <- FP.floors.FPL$PovertyLine*(1-FP.floors.FPL$PovGapSqr/FP.floors.FPL$PovGap)
 FP.floors.FPL <- FP.floors.FPL[,c(1,4,5,10)]
 FP.floors.FPL$floor.cal <- FP.floors.FPL$floor*2100
+
+FP.floors.FPL.agg <- FP.povcal.FPL[,c(6,7,14,15,21)]
+#FP.floors.FPL.agg <- FP.floors.FPL.agg[which(FP.floors.FPL.agg$CoverageType != "A")]
+FP.floors.FPL.agg$PovGap.Pop <- FP.floors.FPL.agg$PovGap*FP.floors.FPL.agg$ReqYearPopulation
+FP.floors.FPL.agg$PovGapSqr.Pop <- FP.floors.FPL.agg$PovGapSqr*FP.floors.FPL.agg$ReqYearPopulation
+FP.floors.FPL.agg <- FP.floors.FPL.agg[,c(2,5,6,7)]
+FP.floors.FPL.agg <- aggregate(FP.floors.FPL.agg, by=list(FP.floors.FPL.agg$RequestYear),FUN=sum)
+FP.floors.FPL.agg$PovGap <- FP.floors.FPL.agg$PovGap.Pop/FP.floors.FPL.agg$ReqYearPopulation
+FP.floors.FPL.agg$PovGapSqr <- FP.floors.FPL.agg$PovGapSqr.Pop/FP.floors.FPL.agg$ReqYearPopulation
+FP.floors.FPL.agg <- FP.floors.FPL.agg[,c(1,6,7)]
+FP.floors.FPL.agg$floor <- 1-FP.floors.FPL.agg$PovGapSqr/FP.floors.FPL.agg$PovGap
+FP.floors.FPL.agg$floor.cal <- FP.floors.FPL.agg$floor*2100
+
+FP.floors.FPL.agg.ex.chn <- FP.povcal.FPL[,c(4,6,7,14,15,21)]
+FP.floors.FPL.agg.ex.chn <- FP.floors.FPL.agg.ex.chn[which(FP.floors.FPL.agg.ex.chn$CountryName != "China")]
+FP.floors.FPL.agg.ex.chn$PovGap.Pop <- FP.floors.FPL.agg.ex.chn$PovGap*FP.floors.FPL.agg.ex.chn$ReqYearPopulation
+FP.floors.FPL.agg.ex.chn$PovGapSqr.Pop <- FP.floors.FPL.agg.ex.chn$PovGapSqr*FP.floors.FPL.agg.ex.chn$ReqYearPopulation
+FP.floors.FPL.agg.ex.chn <- FP.floors.FPL.agg.ex.chn[,c(3,6,7,8)]
+FP.floors.FPL.agg.ex.chn <- aggregate(FP.floors.FPL.agg.ex.chn, by=list(FP.floors.FPL.agg.ex.chn$RequestYear),FUN=sum)
+FP.floors.FPL.agg.ex.chn$PovGap <- FP.floors.FPL.agg.ex.chn$PovGap.Pop/FP.floors.FPL.agg.ex.chn$ReqYearPopulation
+FP.floors.FPL.agg.ex.chn$PovGapSqr <- FP.floors.FPL.agg.ex.chn$PovGapSqr.Pop/FP.floors.FPL.agg.ex.chn$ReqYearPopulation
+FP.floors.FPL.agg.ex.chn <- FP.floors.FPL.agg.ex.chn[,c(1,6,7)]
+FP.floors.FPL.agg.ex.chn$floor <- 1-FP.floors.FPL.agg.ex.chn$PovGapSqr/FP.floors.FPL.agg.ex.chn$PovGap
+FP.floors.FPL.agg.ex.chn$floor.cal <- FP.floors.FPL.agg.ex.chn$floor*2100
 
 #Calculate kernel densities
 FPL.kernel <- as.data.frame(cbind(density(PL$FPL.2011PPP, adjust=1, kernel="g", na.rm=T)$x, density(PL$FPL.2011PPP, adjust=1, kernel="g", na.rm=T)$y))

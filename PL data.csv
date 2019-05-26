@@ -1,7 +1,7 @@
 Country,Povcal.code,Income.group,FPL.current.LCU,NPL.current.LCU,Current.year,FPL.calories
 Afghanistan,AFG_3,Low income,39.03080082,67.8110883,2016-2017,2100
 Albania,ALB_3,Upper middle income,100.1067762,160.6899384,2002,2288
-Algeria,DZA_3,Upper middle income,32.90075291,50.61738535,1995,2100
+Algeria,DZA_3,Upper middle income,29.96030116,45.19644079,1995,2100
 Angola,AGO_3,Lower middle income,9.417289991,26.99693435,2000-2001,
 Argentina,ARG_3,High income,2.687474333,6.367145791,2002,2700
 Armenia,ARM_3,Upper middle income,574.3901437,922.1683778,2009,2232
@@ -21,8 +21,8 @@ Cambodia,KHM_3,Lower middle income,2683.33,4080.75,2009,2200
 Central African Republic,CAF_3,Low income,488.3230664,709.8042437,2008,2100
 Chad,TCD_3,Low income,438.0314853,651.449692,2011,2400
 Chile,CHL_3,High income,1019.433265,2732.08115,2012,2000
-China--Rural,CHN_1,Upper middle income,4.101300479,7.665982204,2014,2100
-China--Urban,CHN_2,Upper middle income,4.101300479,7.665982204,2014,2100
+China--Rural,CHN_1,Upper middle income,4.986468828,9.320502482,2014,2100
+China--Urban,CHN_2,Upper middle income,6.072628765,11.35070797,2014,2100
 Colombia,COL_3,Upper middle income,3768.11499,7939.975359,2016,
 Comoros,COM_3,Low income,444.1514321,700.250702,2004,2160
 "Congo, Dem. Rep.",COD_3,Low income,821.2536734,1912.034515,2012,2300
@@ -48,10 +48,10 @@ Guinea,GIN_3,Low income,4287.681191,7505.389002,2012,
 Guyana,GUY_3,Upper middle income,273.0841889,436.1067762,2009,2400
 Haiti,HTI_3,Low income,41.6,81.7,2012,2300
 Honduras,HND_3,Lower middle income,51.17424759,89.68600049,2018,
-India--Rural,IND_1,Lower middle income,18.20123203,31.93429158,2011-2012,2155
-India--Urban,IND_2,Lower middle income,21.5523614,46.22587269,2011-2012,2090
-Indonesia--Rural,IDN_1,Lower middle income,9248.753183,12031.29117,2017,2100
-Indonesia--Urban,IDN_2,Lower middle income,9101.869733,12921.82867,2017,2100
+India--Rural,IND_1,Lower middle income,21.11281115,37.04269393,2011-2012,2155
+India--Urban,IND_2,Lower middle income,20.55733095,44.0917144,2011-2012,2090
+Indonesia--Rural,IDN_1,Lower middle income,10322.88134,13428.57666,2017,2100
+Indonesia--Urban,IDN_2,Lower middle income,8541.290338,12125.98,2017,2100
 Iraq,IRQ_3,Upper middle income,1658.259055,3625.790554,2012,2337
 Jamaica,JAM_3,Upper middle income,302.1683778,462.8172485,2014,
 Jordan,JOR_3,Upper middle income,0.919917864,2.228610541,2010,
