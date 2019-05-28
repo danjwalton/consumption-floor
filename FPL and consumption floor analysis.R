@@ -262,7 +262,7 @@ povcal.out.FPL <- function(country,year="all",PL=1,PPP){
 i <- 1
 FP.list <- list()
 for (i in 1:nrow(PL)){
-  FP.list[[i]] <- povcal.out.FPL(PL[i,2],year="all",PL=1,PL[i,5])
+  FP.list[[i]] <- povcal.out.FPL(PL[i,2],year="all",PL=2,PL[i,5])
 }
 
 FP.povcal.FPL <- rbindlist(FP.list)
@@ -281,28 +281,30 @@ FP.floors.FPL$floor <- FP.floors.FPL$PovertyLine*(1-FP.floors.FPL$PovGapSqr/FP.f
 FP.floors.FPL <- FP.floors.FPL[,c(1,4,5,10)]
 FP.floors.FPL$floor.cal <- FP.floors.FPL$floor*2100
 
-FP.floors.FPL.agg <- FP.povcal.FPL[,c(6,7,14,15,21)]
+FP.floors.FPL.agg <- FP.povcal.FPL[,c(6,7,11,14,15,21)]
 #FP.floors.FPL.agg <- FP.floors.FPL.agg[which(FP.floors.FPL.agg$CoverageType != "A")]
 FP.floors.FPL.agg$PovGap.Pop <- FP.floors.FPL.agg$PovGap*FP.floors.FPL.agg$ReqYearPopulation
 FP.floors.FPL.agg$PovGapSqr.Pop <- FP.floors.FPL.agg$PovGapSqr*FP.floors.FPL.agg$ReqYearPopulation
-FP.floors.FPL.agg <- FP.floors.FPL.agg[,c(2,5,6,7)]
-FP.floors.FPL.agg <- aggregate(FP.floors.FPL.agg, by=list(FP.floors.FPL.agg$RequestYear),FUN=sum)
+FP.floors.FPL.agg <- FP.floors.FPL.agg[,c(2,3,6,7,8)]
+FP.floors.FPL.agg[which(FP.floors.FPL.agg$PovGap.Pop==0)]$ReqYearPopulation <- 0
+FP.floors.FPL.agg <- aggregate(FP.floors.FPL.agg, by=list(FP.floors.FPL.agg$RequestYear,FP.floors.FPL.agg$PovertyLine),FUN=sum)
 FP.floors.FPL.agg$PovGap <- FP.floors.FPL.agg$PovGap.Pop/FP.floors.FPL.agg$ReqYearPopulation
 FP.floors.FPL.agg$PovGapSqr <- FP.floors.FPL.agg$PovGapSqr.Pop/FP.floors.FPL.agg$ReqYearPopulation
-FP.floors.FPL.agg <- FP.floors.FPL.agg[,c(1,6,7)]
-FP.floors.FPL.agg$floor <- 1-FP.floors.FPL.agg$PovGapSqr/FP.floors.FPL.agg$PovGap
+FP.floors.FPL.agg <- FP.floors.FPL.agg[,c(1,2,8,9)]
+FP.floors.FPL.agg$floor <- FP.floors.FPL.agg$Group.2*(1-FP.floors.FPL.agg$PovGapSqr/FP.floors.FPL.agg$PovGap)
 FP.floors.FPL.agg$floor.cal <- FP.floors.FPL.agg$floor*2100
 
-FP.floors.FPL.agg.ex.chn <- FP.povcal.FPL[,c(4,6,7,14,15,21)]
+FP.floors.FPL.agg.ex.chn <- FP.povcal.FPL[,c(4,6,7,11,14,15,21)]
 FP.floors.FPL.agg.ex.chn <- FP.floors.FPL.agg.ex.chn[which(FP.floors.FPL.agg.ex.chn$CountryName != "China")]
 FP.floors.FPL.agg.ex.chn$PovGap.Pop <- FP.floors.FPL.agg.ex.chn$PovGap*FP.floors.FPL.agg.ex.chn$ReqYearPopulation
 FP.floors.FPL.agg.ex.chn$PovGapSqr.Pop <- FP.floors.FPL.agg.ex.chn$PovGapSqr*FP.floors.FPL.agg.ex.chn$ReqYearPopulation
-FP.floors.FPL.agg.ex.chn <- FP.floors.FPL.agg.ex.chn[,c(3,6,7,8)]
-FP.floors.FPL.agg.ex.chn <- aggregate(FP.floors.FPL.agg.ex.chn, by=list(FP.floors.FPL.agg.ex.chn$RequestYear),FUN=sum)
+FP.floors.FPL.agg.ex.chn <- FP.floors.FPL.agg.ex.chn[,c(3,4,7,8,9)]
+FP.floors.FPL.agg.ex.chn[which(FP.floors.FPL.agg.ex.chn$PovGap.Pop==0)]$ReqYearPopulation <- 0
+FP.floors.FPL.agg.ex.chn <- aggregate(FP.floors.FPL.agg.ex.chn, by=list(FP.floors.FPL.agg.ex.chn$RequestYear,FP.floors.FPL.agg.ex.chn$PovertyLine),FUN=sum)
 FP.floors.FPL.agg.ex.chn$PovGap <- FP.floors.FPL.agg.ex.chn$PovGap.Pop/FP.floors.FPL.agg.ex.chn$ReqYearPopulation
 FP.floors.FPL.agg.ex.chn$PovGapSqr <- FP.floors.FPL.agg.ex.chn$PovGapSqr.Pop/FP.floors.FPL.agg.ex.chn$ReqYearPopulation
-FP.floors.FPL.agg.ex.chn <- FP.floors.FPL.agg.ex.chn[,c(1,6,7)]
-FP.floors.FPL.agg.ex.chn$floor <- 1-FP.floors.FPL.agg.ex.chn$PovGapSqr/FP.floors.FPL.agg.ex.chn$PovGap
+FP.floors.FPL.agg.ex.chn <- FP.floors.FPL.agg.ex.chn[,c(1,2,8,9)]
+FP.floors.FPL.agg.ex.chn$floor <- FP.floors.FPL.agg.ex.chn$Group.2*(1-FP.floors.FPL.agg.ex.chn$PovGapSqr/FP.floors.FPL.agg.ex.chn$PovGap)
 FP.floors.FPL.agg.ex.chn$floor.cal <- FP.floors.FPL.agg.ex.chn$floor*2100
 
 #Calculate kernel densities
