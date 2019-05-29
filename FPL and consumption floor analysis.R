@@ -361,11 +361,14 @@ Floor.povcal.kernel <- as.data.frame(cbind(density(povcal.floors$floor, adjust=1
 i <- 1
 kernel.list <- list()
 for(year in unique(FP.floors.FPL$RequestYear)){
-  kernel.list[[year-1980]] <- as.data.frame(cbind(density(subset(FP.floors.FPL, RequestYear==year)$floor.cal, adjust=1, kernel="g",na.rm=T)$x,density(subset(FP.floors.FPL, RequestYear==year)$floor.cal, adjust=1, kernel="g",na.rm=T)$y))
+  kernel.list[[year-1980]] <- as.data.frame(cbind(density(subset(FP.floors.FPL, RequestYear==year)$floor.cal, adjust=1, kernel="g",na.rm=T,bw="SJ",from=0,to=2100)$x,density(subset(FP.floors.FPL, RequestYear==year)$floor.cal, adjust=1, kernel="g",na.rm=T,bw="SJ",from=0,to=2100)$y))
 kernel.list[[year-1980]]$year <- year
   }
 floor.kernels <- rbindlist(kernel.list)
 names(floor.kernels) <- c("floor.cal","density","year")
+floor.kernels <- melt(floor.kernels,id.vars=c(1,3))
+floor.kernels <- dcast(floor.kernels, floor.cal ~ year)
+write.csv(floor.kernels, "Floor kernels.csv")
 
 FPL.kernel.plot <- ggplot(subset(PL,Income.group != "High income")) +
   geom_density(aes(FPL.2011PPP,col=Income.group,fill=Income.group,alpha=I(0.5)),adjust=1, kernel="g", na.rm=T)
