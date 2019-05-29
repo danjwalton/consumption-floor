@@ -262,10 +262,25 @@ povcal.out.FPL <- function(country,year="all",PL=1,PPP){
 i <- 1
 FP.list <- list()
 for (i in 1:nrow(PL)){
-  FP.list[[i]] <- povcal.out.FPL(PL[i,2],year="all",PL=2,PL[i,5])
+  FP.list[[i]] <- povcal.out.FPL(PL[i,2],year="all",PL=1,PL[i,5])
 }
 
 FP.povcal.FPL <- rbindlist(FP.list)
+
+#Query Povcal as normal at extreme poverty
+povcal.out <- function(country,year="all",PL=1.9){
+  param <- paste0("RefYears=",year,"&PovertyLine=",PL,"&C0=",country)
+  url <- paste0("http://iresearch.worldbank.org/PovcalNet/PovcalNetAPI.ashx?",param,"&display=c")
+  return(read.csv(url,header=T))
+}
+
+i <- 1
+povcal.list <- list()
+for (i in 1:nrow(PL)){
+  povcal.list[[i]] <- povcal.out(PL[i,2],year="all",PL=1.9)
+}
+
+povcal <- rbindlist(povcal.list)
 
 #Calculate national consumption floors based on food poverty lines, both in PPP dollar terms and FPL terms
 FP.floors.PPP <- FP.povcal.PPP[,c(4,3,6,7,9,11,13,14,15)]
@@ -280,6 +295,12 @@ FP.floors.FPL[which(FP.floors.FPL$CoverageType=="U")]$CountryName <- paste0(FP.f
 FP.floors.FPL$floor <- FP.floors.FPL$PovertyLine*(1-FP.floors.FPL$PovGapSqr/FP.floors.FPL$PovGap)
 FP.floors.FPL <- FP.floors.FPL[,c(1,4,5,10)]
 FP.floors.FPL$floor.cal <- FP.floors.FPL$floor*2100
+
+povcal.floors <- povcal[,c(4,3,6,7,9,11,13,14,15)]
+povcal.floors[which(povcal.floors$CoverageType=="R")]$CountryName <- paste0(povcal.floors[which(povcal.floors$CoverageType=="R")]$CountryName,"--Rural")
+povcal.floors[which(povcal.floors$CoverageType=="U")]$CountryName <- paste0(povcal.floors[which(povcal.floors$CoverageType=="U")]$CountryName,"--Urban")
+povcal.floors$floor <- povcal.floors$PovertyLine*(1-povcal.floors$PovGapSqr/povcal.floors$PovGap)
+povcal.floors <- povcal.floors[,c(1,4,5,10)]
 
 FP.floors.FPL.agg <- FP.povcal.FPL[,c(6,7,11,14,15,21)]
 #FP.floors.FPL.agg <- FP.floors.FPL.agg[which(FP.floors.FPL.agg$CoverageType != "A")]
@@ -307,10 +328,44 @@ FP.floors.FPL.agg.ex.chn <- FP.floors.FPL.agg.ex.chn[,c(1,2,8,9)]
 FP.floors.FPL.agg.ex.chn$floor <- FP.floors.FPL.agg.ex.chn$Group.2*(1-FP.floors.FPL.agg.ex.chn$PovGapSqr/FP.floors.FPL.agg.ex.chn$PovGap)
 FP.floors.FPL.agg.ex.chn$floor.cal <- FP.floors.FPL.agg.ex.chn$floor*2100
 
+povcal.floors.agg <- povcal[,c(6,7,11,14,15,21)]
+#povcal.floors.agg <- povcal.floors.agg[which(povcal.floors.agg$CoverageType != "A")]
+povcal.floors.agg$PovGap.Pop <- povcal.floors.agg$PovGap*povcal.floors.agg$ReqYearPopulation
+povcal.floors.agg$PovGapSqr.Pop <- povcal.floors.agg$PovGapSqr*povcal.floors.agg$ReqYearPopulation
+povcal.floors.agg <- povcal.floors.agg[,c(2,3,6,7,8)]
+povcal.floors.agg[which(povcal.floors.agg$PovGap.Pop==0)]$ReqYearPopulation <- 0
+povcal.floors.agg <- aggregate(povcal.floors.agg, by=list(povcal.floors.agg$RequestYear,povcal.floors.agg$PovertyLine),FUN=sum)
+povcal.floors.agg$PovGap <- povcal.floors.agg$PovGap.Pop/povcal.floors.agg$ReqYearPopulation
+povcal.floors.agg$PovGapSqr <- povcal.floors.agg$PovGapSqr.Pop/povcal.floors.agg$ReqYearPopulation
+povcal.floors.agg <- povcal.floors.agg[,c(1,2,8,9)]
+povcal.floors.agg$floor <- povcal.floors.agg$Group.2*(1-povcal.floors.agg$PovGapSqr/povcal.floors.agg$PovGap)
+
+povcal.floors.agg.ex.chn <- povcal[,c(4,6,7,11,14,15,21)]
+povcal.floors.agg.ex.chn <- povcal.floors.agg.ex.chn[which(povcal.floors.agg.ex.chn$CountryName != "China")]
+povcal.floors.agg.ex.chn$PovGap.Pop <- povcal.floors.agg.ex.chn$PovGap*povcal.floors.agg.ex.chn$ReqYearPopulation
+povcal.floors.agg.ex.chn$PovGapSqr.Pop <- povcal.floors.agg.ex.chn$PovGapSqr*povcal.floors.agg.ex.chn$ReqYearPopulation
+povcal.floors.agg.ex.chn <- povcal.floors.agg.ex.chn[,c(3,4,7,8,9)]
+povcal.floors.agg.ex.chn[which(povcal.floors.agg.ex.chn$PovGap.Pop==0)]$ReqYearPopulation <- 0
+povcal.floors.agg.ex.chn <- aggregate(povcal.floors.agg.ex.chn, by=list(povcal.floors.agg.ex.chn$RequestYear,povcal.floors.agg.ex.chn$PovertyLine),FUN=sum)
+povcal.floors.agg.ex.chn$PovGap <- povcal.floors.agg.ex.chn$PovGap.Pop/povcal.floors.agg.ex.chn$ReqYearPopulation
+povcal.floors.agg.ex.chn$PovGapSqr <- povcal.floors.agg.ex.chn$PovGapSqr.Pop/povcal.floors.agg.ex.chn$ReqYearPopulation
+povcal.floors.agg.ex.chn <- povcal.floors.agg.ex.chn[,c(1,2,8,9)]
+povcal.floors.agg.ex.chn$floor <- povcal.floors.agg.ex.chn$Group.2*(1-povcal.floors.agg.ex.chn$PovGapSqr/povcal.floors.agg.ex.chn$PovGap)
+
 #Calculate kernel densities
 FPL.kernel <- as.data.frame(cbind(density(PL$FPL.2011PPP, adjust=1, kernel="g", na.rm=T)$x, density(PL$FPL.2011PPP, adjust=1, kernel="g", na.rm=T)$y))
 NPL.kernel <- as.data.frame(cbind(density(PL$NPL.2011PPP, adjust=1, kernel="g", na.rm=T)$x, density(PL$NPL.2011PPP, adjust=1, kernel="g", na.rm=T)$y))
 Floor.FPL.kernel <- as.data.frame(cbind(density(FP.floors.FPL$floor.cal, adjust=1, kernel="g", na.rm=T)$x, density(FP.floors.FPL$floor.cal, adjust=1, kernel="g", na.rm=T)$y))
+Floor.povcal.kernel <- as.data.frame(cbind(density(povcal.floors$floor, adjust=1, kernel="g", na.rm=T)$x, density(povcal.floors$floor, adjust=1, kernel="g", na.rm=T)$y))
+
+i <- 1
+kernel.list <- list()
+for(year in unique(FP.floors.FPL$RequestYear)){
+  kernel.list[[year-1980]] <- as.data.frame(cbind(density(subset(FP.floors.FPL, RequestYear==year)$floor.cal, adjust=1, kernel="g",na.rm=T)$x,density(subset(FP.floors.FPL, RequestYear==year)$floor.cal, adjust=1, kernel="g",na.rm=T)$y))
+kernel.list[[year-1980]]$year <- year
+  }
+floor.kernels <- rbindlist(kernel.list)
+names(floor.kernels) <- c("floor.cal","density","year")
 
 FPL.kernel.plot <- ggplot(subset(PL,Income.group != "High income")) +
   geom_density(aes(FPL.2011PPP,col=Income.group,fill=Income.group,alpha=I(0.5)),adjust=1, kernel="g", na.rm=T)
@@ -324,4 +379,17 @@ Floor.FPL.kernel.plot <- ggplot(subset(FP.floors.FPL,RequestYear==2015|RequestYe
   geom_density(aes(floor.cal,col=as.character(RequestYear),fill=as.character(RequestYear),alpha=I(0.5)),adjust=1, kernel="g", na.rm=T)
 ggsave("Floor.FPL.kernel.plot.png", Floor.FPL.kernel.plot)
 
-rm(FP.list,CPI,CPI.2011,FAO.CPI,FAO.CPI.mean,FAO.CPI.melt,FCPI,FCPI.2011,Povcal.CPI,Povcal.CPI.melt,Povcal.PPP,WDI.CPI,WDI.ISO,WDI.PPP,Povcal.CPI.melt.IDN,Povcal.CPI.melt.IDN.R,Povcal.CPI.melt.IDN.U)
+Floor.povcal.kernel.plot <- ggplot(subset(povcal.floors,RequestYear==2015|RequestYear==1981)) +
+  geom_density(aes(floor,col=as.character(RequestYear),fill=as.character(RequestYear),alpha=I(0.5)),adjust=1, kernel="g", na.rm=T)
+ggsave("Floor.povcal.kernel.plot.png", Floor.povcal.kernel.plot)
+
+Floors.comparison <- merge(FP.floors.FPL,povcal.floors, by=c("CountryName","RequestYear","DataType"))[,c(1,2,3,4,6)]
+Floors.comparison$floor.y <- Floors.comparison$floor.y/1.9
+names(Floors.comparison) <- c("CountryName","RequestYear","DataType","FPL.floor","IPL.floor")
+Floors.comparison <- melt(Floors.comparison, id.vars=c(1,2,3))
+
+Floors.comparison.kernel.plot <- ggplot(subset(Floors.comparison, RequestYear==2015))+
+  geom_density(aes(value, col=variable, fill=variable, alpha=I(0.5)),adjust=1, kernel="g",na.rm=T)
+ggsave("Floors.comparison.kernel.plot.png",Floors.comparison.kernel.plot)
+
+rm(FP.list,povcal.list,CPI,CPI.2011,FAO.CPI,FAO.CPI.mean,FAO.CPI.melt,FCPI,FCPI.2011,Povcal.CPI,Povcal.CPI.melt,Povcal.PPP,WDI.CPI,WDI.ISO,WDI.PPP,Povcal.CPI.melt.IDN,Povcal.CPI.melt.IDN.R,Povcal.CPI.melt.IDN.U)
