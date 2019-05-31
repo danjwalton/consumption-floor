@@ -73,6 +73,6 @@ for(i in 1:nrow(ext_country_codes)){
 
 doc <- rbindlist(data.list, fill=T)
 
-write.csv(doc,"doc_cpi_list.csv")
+write.csv(doc,"project-data/doc_cpi_list.csv")
 
-write.csv(ext,"povcal_out.csv")
+write.csv(ext,"project-data/povcal_out.csv")

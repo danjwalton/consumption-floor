@@ -1,9 +1,9 @@
 required.packages <- c("reshape2","ggplot2","WDI","data.table")
 lapply(required.packages, require, character.only=T)
 
-data <- read.csv("PL data.csv")
-ext <- read.csv("povcal_out.csv")
-Povcal.CPI <- read.csv("doc_cpi_list.csv")
+data <- read.csv("project-data/PL data.csv")
+ext <- read.csv("project-data/povcal_out.csv")
+Povcal.CPI <- read.csv("project-data/doc_cpi_list.csv")
 
 #Download FAO food CPI and total CPI
 temp_download <- tempfile()
@@ -235,7 +235,7 @@ names(PL)[8] <- "NPL.2011PPP"
 FPL <- PL[,c(2,6)]
 FPL <- FPL[complete.cases(FPL),]
 
-write.csv(PL,"PLs.csv",row.names=F)
+write.csv(PL,"output/PLs.csv",row.names=F)
 
 #Query Povcal with FPL(PPP) set as PL. There is a more efficient way of doing this (multiple countries and poverty lines per query), but the API doesn't seem to be able to handle it
 povcal.out.PPP <- function(country,year="all",PL){
@@ -368,23 +368,23 @@ floor.kernels <- rbindlist(kernel.list)
 names(floor.kernels) <- c("floor.cal","density","year")
 floor.kernels <- melt(floor.kernels,id.vars=c(1,3))
 floor.kernels <- dcast(floor.kernels, floor.cal ~ year)
-write.csv(floor.kernels, "Floor kernels.csv")
+write.csv(floor.kernels, "output/Floor kernels.csv")
 
 FPL.kernel.plot <- ggplot(subset(PL,Income.group != "High income")) +
   geom_density(aes(FPL.2011PPP,col=Income.group,fill=Income.group,alpha=I(0.5)),adjust=1, kernel="g", na.rm=T)
-ggsave("FPL.kernel.plot.png", FPL.kernel.plot)
+ggsave("output/FPL.kernel.plot.png", FPL.kernel.plot)
 
 NPL.kernel.plot <- ggplot(subset(PL,Income.group != "High income")) +
   geom_density(aes(NPL.2011PPP,col=Income.group,fill=Income.group,alpha=I(0.5)),adjust=1,kernel="g", na.rm=T)
-ggsave("NPL.kernel.plot.png", NPL.kernel.plot)
+ggsave("output/NPL.kernel.plot.png", NPL.kernel.plot)
 
 Floor.FPL.kernel.plot <- ggplot(subset(FP.floors.FPL,RequestYear==2015|RequestYear==1981)) +
   geom_density(aes(floor.cal,col=as.character(RequestYear),fill=as.character(RequestYear),alpha=I(0.5)),adjust=1, kernel="g", na.rm=T)
-ggsave("Floor.FPL.kernel.plot.png", Floor.FPL.kernel.plot)
+ggsave("output/Floor.FPL.kernel.plot.png", Floor.FPL.kernel.plot)
 
 Floor.povcal.kernel.plot <- ggplot(subset(povcal.floors,RequestYear==2015|RequestYear==1981)) +
   geom_density(aes(floor,col=as.character(RequestYear),fill=as.character(RequestYear),alpha=I(0.5)),adjust=1, kernel="g", na.rm=T)
-ggsave("Floor.povcal.kernel.plot.png", Floor.povcal.kernel.plot)
+ggsave("output/Floor.povcal.kernel.plot.png", Floor.povcal.kernel.plot)
 
 Floors.comparison <- merge(FP.floors.FPL,povcal.floors, by=c("CountryName","RequestYear","DataType"))[,c(1,2,3,4,6)]
 Floors.comparison$floor.y <- Floors.comparison$floor.y/1.9
@@ -393,6 +393,6 @@ Floors.comparison <- melt(Floors.comparison, id.vars=c(1,2,3))
 
 Floors.comparison.kernel.plot <- ggplot(subset(Floors.comparison, RequestYear==2015))+
   geom_density(aes(value, col=variable, fill=variable, alpha=I(0.5)),adjust=1, kernel="g",na.rm=T)
-ggsave("Floors.comparison.kernel.plot.png",Floors.comparison.kernel.plot)
+ggsave("output/Floors.comparison.kernel.plot.png",Floors.comparison.kernel.plot)
 
 rm(FP.list,povcal.list,CPI,CPI.2011,FAO.CPI,FAO.CPI.mean,FAO.CPI.melt,FCPI,FCPI.2011,Povcal.CPI,Povcal.CPI.melt,Povcal.PPP,WDI.CPI,WDI.ISO,WDI.PPP,Povcal.CPI.melt.IDN,Povcal.CPI.melt.IDN.R,Povcal.CPI.melt.IDN.U)
