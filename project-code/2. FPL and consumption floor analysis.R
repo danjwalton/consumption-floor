@@ -253,6 +253,7 @@ for (i in 1:nrow(FPL)){
 }
 
 FP.povcal.PPP <- rbindlist(FP.list)
+write.csv(FP.povcal.PPP,"output/Povcal food poverty.csv",row.names = F)
 
 #Query Povcal with FPL(LCU) set as PPP. This gives equivalent results to above.
 povcal.out.FPL <- function(country,year="all",PL=1,PPP){
