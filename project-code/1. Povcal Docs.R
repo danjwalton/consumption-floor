@@ -1,6 +1,8 @@
 required.packages <- c("reshape2","ggplot2","WDI","data.table","XML")
 lapply(required.packages, require, character.only=T)
 
+setwd("G:/My Drive/Work/GitHub/consumption-floor/")
+
 #Function to retrieve full list of Povcal surveys
 povcal_svy = function(pl=1.9,group.by="WB"){
   url = "http://iresearch.worldbank.org/PovcalNet/PovcalNetAPI.ashx?"
