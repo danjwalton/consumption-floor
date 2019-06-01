@@ -4,6 +4,7 @@ lapply(required.packages, require, character.only=T)
 setwd("G:/My Drive/Work/GitHub/consumption-floor/")
 temp_unz <- unzip("project-data/UGIR7BSV.ZIP", "UGIR7BFL.SAV")
 uga.data <- read.spss(temp_unz, to.data.frame=T)
+names(uga.data) <- attributes(uga.data)[4]$variable.labels
 
 uga.wealth <- as.data.frame(uga.data$`Wealth index factor score combined (5 decimals)`/100000)
 names(uga.wealth) <- "wealth.index"
