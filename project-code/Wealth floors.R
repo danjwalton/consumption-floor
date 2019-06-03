@@ -37,15 +37,12 @@ mode.kernel <- function(distribution, kernel="g", adjust=1, weights){
 }
 
 wealth.mode <- mode.kernel(uga.wealth$wealth.index, weights=uga.wealth$ind.weights)
-
-uga.floor <- floor.calc(uga.wealth$wealth.index,uga.wealth$ind.weights,wealth.mode) + min.wealth
-
 wealth.wom.mode <- mode.kernel(uga.wealth$wealth.index, weights=uga.wealth$wom.weights)
-
-uga.wom.floor <- floor.calc(uga.wealth$wealth.index,uga.wealth$ind.weights,wealth.wom.mode) + min.wealth
-
 wealth.urb.mode <- mode.kernel(uga.wealth$wealth.index, weights=uga.wealth$urban.weights)
 wealth.rur.mode <- mode.kernel(uga.wealth$wealth.index, weights=uga.wealth$rural.weights)
 
+
+uga.floor <- floor.calc(uga.wealth$wealth.index,uga.wealth$ind.weights,wealth.mode) + min.wealth
+uga.wom.floor <- floor.calc(uga.wealth$wealth.index,uga.wealth$ind.weights,wealth.wom.mode) + min.wealth
 uga.urb.floor <- floor.calc(uga.wealth$wealth.index, weights=uga.wealth$urban.weights, wealth.urb.mode) + min.wealth
 uga.rur.floor <- floor.calc(uga.wealth$wealth.index, weights=uga.wealth$rural.weights, wealth.rur.mode) + min.wealth
