@@ -39,19 +39,20 @@ povcal.threshold.national <- function(targetHC,year="all",lowerguess=0, uppergue
   close(pb)
   data <- rbindlist(data.list)
   data$diff <- abs(targetHC-data$HeadCount)
-  datatemp <- list()
-  i <- 1
-  for(country in unique(data$CountryName)){
-    for(year in unique(data$RequestYear)){
-      datatemp[[i]] <- data[which(CountryName==country&RequestYear==year&data$diff==min(data[which(RequestYear==year&CountryName==country)]$diff))]
-      i = i + 1
-      }
-  }
-  thresholds <- rbindlist(datatemp)
-  thresholdsdt <- as.data.table(thresholds)
-  thresholdsdt$CountryYear <- paste0(thresholdsdt$CountryName,thresholdsdt$RequestYear)
-  thresholdsdt[thresholdsdt[, .I[PovertyLine==max(PovertyLine)], by=CountryYear]$V1]
-  return(thresholdsdt)
+  #datatemp <- list()
+  #i <- 1
+  #for(country in unique(data$CountryName)){
+    #for(year in unique(data$RequestYear)){
+      #datatemp[[i]] <- data[which(CountryName==country&RequestYear==year&data$diff==min(data[which(RequestYear==year&CountryName==country)]$diff))]
+      #i = i + 1
+      #}
+  #}
+  #thresholds <- rbindlist(datatemp)
+  datadt <- as.data.table(data)
+  datadt$CountryYear <- paste0(datadt$CountryName,datadt$CoverageType,datadt$RequestYear)
+  datadt <- datadt[datadt[, .I[diff == min(diff)], by=CountryYear]$V1]
+  datadt <- datadt[datadt[, .I[PovertyLine==min(PovertyLine)], by=CountryYear]$V1]
+  return(datadt)
 }
 
 P1.thresholds.global <- povcal.threshold.all(targetHC=0.01,year="all",lowerguess=0.3,upperguess=0.7,precision=0.005)
